@@ -1,10 +1,12 @@
-﻿using HR_System.ViewModels;
+﻿using BLL.Services.RolesServices;
+using HR_System.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -18,11 +20,13 @@ public class RolesController : ControllerBase
 {
     private readonly UserManager<IdentityUser> _user;
     private readonly RoleManager<IdentityRole> _roles;
+    private readonly IRolesServices rolesServ;
 
-    public RolesController(UserManager<IdentityUser> user, RoleManager<IdentityRole> roles)
+    public RolesController(UserManager<IdentityUser> user, RoleManager<IdentityRole> roles , IRolesServices rolesServ)
     {
         _user = user;
         _roles = roles;
+        this.rolesServ = rolesServ;
     }
 
     // GET: api/Roles
@@ -31,6 +35,60 @@ public class RolesController : ControllerBase
     {
         var users = await _user.Users.ToListAsync();
         return Ok(users); // Return the list of users as JSON
+    }
+
+    [HttpGet]
+    public IActionResult GetRoles()
+    {
+        var allRoles = rolesServ.GetAll();
+        return Ok(allRoles);
+    }
+
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetRoleById(string id)
+    {
+        var role = await rolesServ.GetByID(id);
+        if (role == null)
+        {
+            return NotFound(new { Success = false, Message = "Role not found." });
+        }
+        return Ok(role);
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] IdentityRole model)
+    {
+        if (ModelState.IsValid)
+        {
+            var result = await rolesServ.Create(model);
+            if (result)
+            {
+                return Ok(new { Success = true, Message = "Role created successfully." });
+            }
+            return BadRequest(new { Success = false, Message = "Error creating role." });
+        }
+        return BadRequest(ModelState);
+    }
+
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var role = await rolesServ.GetByID(id);
+        if (role == null)
+        {
+            return NotFound(new { Success = false, Message = "Role not found." });
+        }
+
+        var result = await rolesServ.Delete(id);
+        if (result)
+        {
+            return Ok(new { Success = true, Message = "Role deleted successfully." });
+        }
+
+        return BadRequest(new { Success = false, Message = "Error deleting role." });
     }
 
     // GET: api/Roles/addRoles/{userId}

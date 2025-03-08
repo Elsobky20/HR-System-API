@@ -1,4 +1,6 @@
-﻿using HR_System.ViewModels;
+﻿using BLL.Services.UsersServices;
+using HR_System.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,78 +8,79 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HR_System_API.Controllers
 {
-
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
+    //[Authorize(Roles = "Admin")]
     public class UsersController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roles;
+        private readonly IUsersServices _usersService;
 
-        public UsersController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roles)
+        public UsersController(UserManager<IdentityUser> userManager, IUsersServices usersService)
         {
             _userManager = userManager;
-            _roles = roles;
+            _usersService = usersService;
         }
 
+        #region Get Users
+        // GET: api/Users
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult GetUsers()
         {
-            return Ok("Users API is running.");
+            var allUsers = _usersService.GetAll();
+            return Ok(allUsers);
         }
+        #endregion
 
-        [HttpGet("AddUser")]
-        public async Task<IActionResult> GetAddUser()
+        #region Get User Details
+        // GET: api/Users/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Details(string id)
         {
-            var roles = await _roles.Roles.Select(r => new roleViewModel { roleId = r.Id, roleName = r.Name }).ToListAsync();
-            var viewModel = new AddUserViewModel
+            var user = await _usersService.GetByID(id);
+            if (user != null)
             {
-                roles = roles
-            };
-            return Ok(viewModel);
+                return Ok(user);
+            }
+            return NotFound(new { Message = "User not found." });
         }
+        #endregion
 
-        [HttpPost("AddUser")]
-        public async Task<IActionResult> AddUser([FromBody] AddUserViewModel model)
+        #region Edit User
+        // PUT: api/Users/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit(string id, [FromBody] IdentityUser model)
         {
-            if (!ModelState.IsValid)
+            model.Id = id; // Ensure the user ID is correctly set
+
+            if (await _usersService.Edit(model))
             {
-                return BadRequest(ModelState);
+                return Ok(new { Success = true, Message = "User updated successfully." });
             }
 
-            if (!model.roles.Any(r => r.IsSelected))
-            {
-                ModelState.AddModelError("Roles", "Please select at least one role.");
-                return BadRequest(ModelState);
-            }
+            return BadRequest(new { Success = false, Message = "Failed to update user." });
+        }
+        #endregion
 
-            if (await _userManager.FindByEmailAsync(model.Email) != null)
+        #region Delete User
+        // DELETE: api/Users/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var user = await _usersService.GetByID(id);
+            if (user != null)
             {
-                ModelState.AddModelError("Email", "Email already exists.");
-                return BadRequest(ModelState);
-            }
-
-            var user = new IdentityUser
-            {
-                Email = model.Email,
-                UserName = model.UserName
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
+                var result = await _usersService.Delete(id);
+                if (result)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    return Ok(new { Success = true, Message = "User deleted successfully." });
                 }
-                return BadRequest(ModelState);
+                return BadRequest(new { Success = false, Message = "Failed to delete user." });
             }
-
-            await _userManager.AddToRolesAsync(user, model.roles.Where(r => r.IsSelected).Select(r => r.roleName));
-
-            return Ok(new { Message = "User created successfully.", UserId = user.Id });
+            return NotFound(new { Message = "User not found." });
         }
+        #endregion
+
+       
     }
-
-
 }

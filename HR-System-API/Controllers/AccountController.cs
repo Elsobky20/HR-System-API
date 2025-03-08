@@ -2,6 +2,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
+using System.Net;
+using HR_System_API.ViewModels;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using DAL.Models;
+using BLL.Helper;
 
 namespace HR_System_API.Controllers
 {
@@ -74,12 +80,79 @@ namespace HR_System_API.Controllers
             return Ok(new { message = "Logged out successfully" });
         }
 
-        // GET: api/Account/Test
-        [HttpGet("Test")]
-        public IActionResult Test()
+
+
+
+
+
+
+        #region Forget Password
+
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordViewModel model)
         {
-            return Ok(new { message = "Test endpoint working" });
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    // Generate token
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                    // Create password reset link
+                    var passwordResetLink = Url.Action("ResetPassword", "Account", new { Email = model.Email, Token = token }, Request.Scheme);
+
+                    // Send email
+                    MailSender.SendMail(new MailViewModel()
+                    {
+                        Email = model.Email,
+                        Title = "Reset Password",
+                        Message = passwordResetLink
+                    });
+
+                    return Ok(new { Message = "Password reset link sent to email." });
+                }
+
+                return NotFound("User not found.");
+            }
+
+            return BadRequest("Invalid model.");
         }
+
+        #endregion
+
+        #region Reset Password
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    var resetResult = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (resetResult.Succeeded)
+                    {
+                        return Ok(new { Message = "Password reset successful." });
+                    }
+
+                    return BadRequest(resetResult.Errors);
+                }
+
+                return NotFound("User not found.");
+            }
+
+            return BadRequest("Invalid model.");
+        }
+
+        #endregion
+
+
+
     }
+
+
+}
 
 }
