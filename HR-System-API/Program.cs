@@ -23,6 +23,8 @@ namespace HR_System_API
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            builder.Services.AddSwaggerGen();
+
             var connectionString = builder.Configuration.GetConnectionString(name: "DefaultConnectoin") ??
     throw new InvalidOperationException(message: "No connection string was found");
 
@@ -46,6 +48,8 @@ namespace HR_System_API
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
                 app.MapOpenApi();
             }
 
