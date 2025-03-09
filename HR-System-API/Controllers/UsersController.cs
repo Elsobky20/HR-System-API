@@ -1,5 +1,7 @@
 ﻿using BLL.Services.UsersServices;
 using HR_System.ViewModels;
+using HR_System_API.Extend;
+using HR_System_API.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -49,7 +51,7 @@ namespace HR_System_API.Controllers
         #region Edit User
         // PUT: api/Users/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(string id, [FromBody] IdentityUser model)
+        public async Task<IActionResult> Edit(string id, [FromBody] ApplicationUser model)
         {
             model.Id = id; // Ensure the user ID is correctly set
 
@@ -81,6 +83,23 @@ namespace HR_System_API.Controllers
         }
         #endregion
 
-       
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            try
+            {
+                var createdUser = await _usersService.Create(model);
+                return Ok(new { Message = "User created successfully", UserId = createdUser.Id });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
     }
 }

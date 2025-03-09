@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using HR_System_API.Extend;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HR_System.Models
 {
@@ -6,8 +7,8 @@ namespace HR_System.Models
     {
         public int Id { get; set; }
         public DateTime day { get; set; }
-        public int EmployeeId { get; set; }
-        public Employee Employee { get; set; } = default!;
+        public string EmployeeId { get; set; }
+        public ApplicationUser Employee { get; set; } = default!;
 
     }
 }

@@ -1,6 +1,8 @@
 ﻿
 using HR_System.DataBase;
 using HR_System.Models;
+using HR_System_API.Extend;
+using HR_System_API.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -12,13 +14,48 @@ namespace BLL.Services.UsersServices
 {
     public class UsersServices : IUsersServices
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext db;
 
-        public UsersServices(UserManager<IdentityUser> userManager, ApplicationDbContext db)
+        public UsersServices(UserManager<ApplicationUser> userManager, ApplicationDbContext db)
         {
-            this.userManager = userManager;
+            this._userManager = userManager;
             this.db = db;
+        }
+
+        public async Task<ApplicationUser> Create(CreateUserViewModel model)
+        {
+            try
+            {
+                var user = new ApplicationUser
+                {
+                    Email = model.Email,
+                    Name = model.Name,
+                    Address = model.Address,
+                    DateOfBarth = model.DateOfBarth,
+                    PhoneNumber = model.PhoneNumber,
+                    UserName = model.UserName,
+                    Nationalid = model.Nationalid,
+                    Salary = model.Salary,
+                    TimeOfAttend = model.TimeOfAttend,
+                    TimeOfLeave = model.TimeOfLeave,
+                    Gender = model.Gender,
+                    DateOfWork = model.DateOfWork,
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (!result.Succeeded)
+                {
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    throw new Exception($"Failed to create user: {errors}");
+                }
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while creating the user: {ex.Message}");
+            }
         }
 
         public async Task<bool> Delete(string id)
@@ -29,7 +66,7 @@ namespace BLL.Services.UsersServices
                 var user = await GetByID(id);
                 if (user != null)
                 {
-                    var result = await userManager.DeleteAsync(user);
+                    var result = await _userManager.DeleteAsync(user);
                     return true;
                 }
                 else
@@ -44,15 +81,25 @@ namespace BLL.Services.UsersServices
             }
         }
 
-        public async Task<bool> Edit(IdentityUser model)
+        public async Task<bool> Edit(ApplicationUser model)
         {
             try
             {
                 var user = await GetByID(model.Id);
                 if (user != null)
                 {
+                    user.Email = model.Email;
+                    user.Name = model.Name;
+                    user.Address = model.Address;
+                    user.DateOfBarth = model.DateOfBarth;
+                    user.PhoneNumber = model.PhoneNumber;
                     user.UserName = model.UserName;
-                    user.Email = model.UserName;
+                    user.Gender = model.Gender;
+                    user.Nationalid = model.Nationalid;
+                    user.Salary = model.Salary;
+                    user.DateOfWork = model.DateOfWork;
+                    user.TimeOfAttend = model.TimeOfAttend;
+                    user.TimeOfLeave = model.TimeOfLeave;
                     var result = await userManager.UpdateAsync(user);
                     return true;
                 }
@@ -69,21 +116,16 @@ namespace BLL.Services.UsersServices
            
         }
 
-        public IQueryable<IdentityUser> GetAll()
+        public IQueryable<ApplicationUser> GetAll()
         {
-            var users = userManager.Users;
+            var users = _userManager.Users;
             return users;
         }
 
-        public async Task<IdentityUser> GetByID(string id)
+        public async Task<ApplicationUser> GetByID(string id)
         {
-            var user = await userManager.FindByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id);
             return user;
         }
-
-
-            
-
-       
     }
 }

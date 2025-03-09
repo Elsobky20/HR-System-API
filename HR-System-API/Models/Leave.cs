@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HR_System_API.Extend;
+using System.ComponentModel.DataAnnotations;
 
 namespace HR_System.Models
 {
@@ -7,11 +8,9 @@ namespace HR_System.Models
         
         public int Id { get; set; }
         public DateTime TimeOfLeave { get; set; }
-
         public string Location { get; set; } = default!;
-
-        public int EmployeeId { get; set; }
-        public Employee Employee { get; set; } = default!;
+        public string EmployeeId { get; set; }
+        public ApplicationUser Employee { get; set; } = default!;
 
     }
 }

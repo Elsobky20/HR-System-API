@@ -1,4 +1,5 @@
 using HR_System.DataBase;
+using HR_System_API.Extend;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -31,7 +32,7 @@ namespace HR_System_API
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 // Default Password settings.
                 options.Password.RequireDigit = false;
@@ -41,7 +42,7 @@ namespace HR_System_API
                 options.Password.RequiredLength = 4;
                 options.Password.RequiredUniqueChars = 0;
             }).AddEntityFrameworkStores<ApplicationDbContext>()
-              .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>(TokenOptions.DefaultProvider);
+              .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>(TokenOptions.DefaultProvider);
 
             var app = builder.Build();
 

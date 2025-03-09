@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
 using System.Net;
-using HR_System_API.ViewModels;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using DAL.Models;
 using BLL.Helper;
@@ -32,6 +31,7 @@ namespace HR_System_API.Controllers
         {
             return Ok(new { message = "Account Index" });
         }
+
 
         // POST: api/Account/Login
         [HttpPost("Login")]
@@ -72,6 +72,7 @@ namespace HR_System_API.Controllers
             }
         }
 
+
         // POST: api/Account/Logout
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
@@ -79,11 +80,6 @@ namespace HR_System_API.Controllers
             await _signInManager.SignOutAsync();
             return Ok(new { message = "Logged out successfully" });
         }
-
-
-
-
-
 
 
         #region Forget Password
@@ -121,6 +117,7 @@ namespace HR_System_API.Controllers
 
         #endregion
 
+
         #region Reset Password
 
         [HttpPost("reset-password")]
@@ -149,10 +146,7 @@ namespace HR_System_API.Controllers
         #endregion
 
 
-
     }
-
-
 }
 
-}
+

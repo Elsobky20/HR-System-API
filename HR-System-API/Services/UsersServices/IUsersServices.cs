@@ -1,4 +1,6 @@
 ﻿using HR_System.Models;
+using HR_System_API.Extend;
+using HR_System_API.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -10,13 +12,10 @@ namespace BLL.Services.UsersServices
 {
     public interface IUsersServices
     {
-        IQueryable<IdentityUser> GetAll();
-        Task<IdentityUser> GetByID(string id);
-        Task<bool> Edit(IdentityUser model);
-
+        IQueryable<ApplicationUser> GetAll();
+        Task<ApplicationUser> GetByID(string id);
+        Task<bool> Edit(ApplicationUser model);
         Task<bool> Delete(string id);
-     
-
-
+        Task<ApplicationUser> Create(CreateUserViewModel model);
     }
 }
