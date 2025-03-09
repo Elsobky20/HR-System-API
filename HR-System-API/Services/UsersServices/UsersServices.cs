@@ -100,7 +100,7 @@ namespace BLL.Services.UsersServices
                     user.DateOfWork = model.DateOfWork;
                     user.TimeOfAttend = model.TimeOfAttend;
                     user.TimeOfLeave = model.TimeOfLeave;
-                    var result = await userManager.UpdateAsync(user);
+                    var result = await _userManager.UpdateAsync(user);
                     return true;
                 }
                 else

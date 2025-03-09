@@ -1,5 +1,6 @@
 ﻿using BLL.Services.RolesServices;
 using HR_System.ViewModels;
+using HR_System_API.Extend;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,26 +17,20 @@ using JsonException = Newtonsoft.Json.JsonException;
 [Authorize(Roles = clsRoles.roleAdmin)] // Ensure only admins can access this API
 [ApiController]
 [Route("api/[controller]")]
-public class RolesController : ControllerBase
+public class RoleController : ControllerBase
 {
-    private readonly UserManager<IdentityUser> _user;
+    private readonly UserManager<ApplicationUser> _user;
     private readonly RoleManager<IdentityRole> _roles;
     private readonly IRolesServices rolesServ;
 
-    public RolesController(UserManager<IdentityUser> user, RoleManager<IdentityRole> roles , IRolesServices rolesServ)
+    public RoleController(UserManager<ApplicationUser> user, RoleManager<IdentityRole> roles , IRolesServices rolesServ)
     {
         _user = user;
         _roles = roles;
         this.rolesServ = rolesServ;
     }
 
-    // GET: api/Roles
-    [HttpGet]
-    public async Task<IActionResult> Index()
-    {
-        var users = await _user.Users.ToListAsync();
-        return Ok(users); // Return the list of users as JSON
-    }
+   
 
     [HttpGet]
     public IActionResult GetRoles()

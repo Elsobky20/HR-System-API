@@ -15,10 +15,10 @@ namespace HR_System_API.Controllers
     //[Authorize(Roles = "Admin")]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUsersServices _usersService;
 
-        public UsersController(UserManager<IdentityUser> userManager, IUsersServices usersService)
+        public UsersController(UserManager<ApplicationUser> userManager, IUsersServices usersService)
         {
             _userManager = userManager;
             _usersService = usersService;

@@ -24,9 +24,19 @@ namespace HR_System_API
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
             builder.Services.AddSwaggerGen();
 
-            var connectionString = builder.Configuration.GetConnectionString(name: "DefaultConnectoin") ??
+            var connectionString = builder.Configuration.GetConnectionString(name: "DefaultConnection") ??
     throw new InvalidOperationException(message: "No connection string was found");
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -49,15 +59,20 @@ namespace HR_System_API
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "HR System API V1");
+                });
                 app.MapOpenApi();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCors();
             app.UseAuthorization();
-
+          
             app.MapControllers();
 
             app.Run();
