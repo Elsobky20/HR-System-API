@@ -2,7 +2,7 @@
 using HR_System.DataBase;
 using HR_System.Models;
 using HR_System_API.Extend;
-using HR_System_API.ViewModels;
+using HR_System_API.DTO;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace BLL.Services.UsersServices
             this.db = db;
         }
 
-        public async Task<ApplicationUser> Create(CreateUserViewModel model)
+        public async Task<ApplicationUser> Create(CreateUserDTO model)
         {
             try
             {

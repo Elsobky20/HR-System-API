@@ -1,7 +1,7 @@
 ﻿using BLL.Services.UsersServices;
-using HR_System.ViewModels;
+using HR_System.DTO;
 using HR_System_API.Extend;
-using HR_System_API.ViewModels;
+using HR_System_API.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -85,7 +85,7 @@ namespace HR_System_API.Controllers
 
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserViewModel model)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

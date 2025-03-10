@@ -1,4 +1,4 @@
-﻿using DAL.Models;
+﻿using DAL.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace BLL.Helper
     public static class MailSender
     {
 
-        public static string SendMail(MailViewModel model)
+        public static string SendMail(MailDTO model)
         {
 
 

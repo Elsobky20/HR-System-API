@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace HR_System_API.ViewModels
+namespace HR_System_API.DTO
 {
 
-    public class CreateUserViewModel
+    public class CreateUserDTO
     {
         [Required(ErrorMessage = "Name is required.")]
         public string Name { get; set; }

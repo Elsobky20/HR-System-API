@@ -1,6 +1,6 @@
 ﻿using HR_System.Models;
 using HR_System_API.Extend;
-using HR_System_API.ViewModels;
+using HR_System_API.DTO;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,6 @@ namespace BLL.Services.UsersServices
         Task<ApplicationUser> GetByID(string id);
         Task<bool> Edit(ApplicationUser model);
         Task<bool> Delete(string id);
-        Task<ApplicationUser> Create(CreateUserViewModel model);
+        Task<ApplicationUser> Create(CreateUserDTO model);
     }
 }

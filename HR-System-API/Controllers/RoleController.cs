@@ -1,5 +1,5 @@
 ﻿using BLL.Services.RolesServices;
-using HR_System.ViewModels;
+using HR_System.DTO;
 using HR_System_API.Extend;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -104,7 +104,7 @@ public class RoleController : ControllerBase
             return NotFound(new { Message = "No roles found." });
         }
 
-        var roleList = allRoles.Select(r => new roleViewModel
+        var roleList = allRoles.Select(r => new roleDTO
         {
             roleId = r.Id,
             roleName = r.Name,
@@ -131,10 +131,10 @@ public class RoleController : ControllerBase
             return NotFound(new { Message = "User not found." });
         }
 
-        List<roleViewModel> myRoles;
+        List<roleDTO> myRoles;
         try
         {
-            myRoles = JsonConvert.DeserializeObject<List<roleViewModel>>(jsonRoles);
+            myRoles = JsonConvert.DeserializeObject<List<roleDTO>>(jsonRoles);
         }
         catch (JsonException)
         {

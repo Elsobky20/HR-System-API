@@ -1,6 +1,6 @@
-﻿namespace HR_System.ViewModels
+﻿namespace HR_System.DTO
 {
-    public class roleViewModel
+    public class roleDTO
     {
         public string? roleId { get; set; }
         public string? roleName { get; set; }

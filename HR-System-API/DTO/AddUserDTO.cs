@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HR_System.ViewModels
+namespace HR_System.DTO
 {
-    public class AddUserViewModel
+    public class AddUserDTO
     {
         [Required]
         [EmailAddress]
@@ -21,6 +21,6 @@ namespace HR_System.ViewModels
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = String.Empty;
 
-        public List<roleViewModel> roles { get; set; }
+        public List<roleDTO> roles { get; set; }
     }
 }

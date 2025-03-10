@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Models
+namespace DAL.DTO
 {
-    public class ResetPasswordViewModel
+    public class ResetPasswordDTO
     {
         [Required(ErrorMessage = "This Field Required")]
         [MinLength(6, ErrorMessage = "Min Len 6 Characters")]

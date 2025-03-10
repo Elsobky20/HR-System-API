@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HR_System.ViewModels
+namespace HR_System.DTO
 {
-    public class LoginVM
+    public class LoginDTO
     {
         [Required]  
         public string Email { get; set; }

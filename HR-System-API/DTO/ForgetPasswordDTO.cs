@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Models
+namespace DAL.DTO
 {
-    public class ForgetPasswordViewModel
+    public class ForgetPasswordDTO
     {
         [Required(ErrorMessage = "This Field Required")]
         [EmailAddress(ErrorMessage = "Invalid Mail")]

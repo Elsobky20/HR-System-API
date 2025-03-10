@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Models
+namespace DAL.DTO
 {
-    public class MailViewModel
+    public class MailDTO
     {
         public string Title { get; set; }
         public string Message { get; set; }

@@ -1,11 +1,11 @@
-﻿using HR_System.ViewModels;
+﻿using HR_System.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
 using System.Net;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using DAL.Models;
+using DAL.DTO;
 using BLL.Helper;
 using HR_System_API.Extend;
 
@@ -36,7 +36,7 @@ namespace HR_System_API.Controllers
 
         // POST: api/Account/Login
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginVM model)
+        public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
             try
             {
@@ -86,7 +86,7 @@ namespace HR_System_API.Controllers
         #region Forget Password
 
         [HttpPost("forget-password")]
-        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordViewModel model)
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDTO model)
         {
             if (ModelState.IsValid)
             {
@@ -100,7 +100,7 @@ namespace HR_System_API.Controllers
                     var passwordResetLink = Url.Action("ResetPassword", "Account", new { Email = model.Email, Token = token }, Request.Scheme);
 
                     // Send email
-                    MailSender.SendMail(new MailViewModel()
+                    MailSender.SendMail(new MailDTO()
                     {
                         Email = model.Email,
                         Title = "Reset Password",
@@ -122,7 +122,7 @@ namespace HR_System_API.Controllers
         #region Reset Password
 
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO model)
         {
             if (ModelState.IsValid)
             {
