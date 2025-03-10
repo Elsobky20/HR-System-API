@@ -1,3 +1,5 @@
+using BLL.Services.RolesServices;
+using BLL.Services.UsersServices;
 using HR_System.DataBase;
 using HR_System_API.Extend;
 using Microsoft.AspNetCore.Authentication;
@@ -54,6 +56,9 @@ namespace HR_System_API
             }).AddEntityFrameworkStores<ApplicationDbContext>()
               .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>(TokenOptions.DefaultProvider);
 
+
+            builder.Services.AddScoped<IRolesServices, RolesServices>();
+            builder.Services.AddScoped<IUsersServices, UsersServices>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿using HR_System.Models;
+using HR_System_API.Extend;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ namespace BLL.Services.RolesServices
     public class RolesServices : IRolesServices
     {
         private readonly RoleManager<IdentityRole> roleManager;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public RolesServices(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
+        public RolesServices(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;

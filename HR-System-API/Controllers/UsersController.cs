@@ -100,6 +100,33 @@ namespace HR_System_API.Controllers
             }
         }
 
+        [HttpPost("{userId}/roles/{roleName}")]
+        public async Task<IActionResult> AddUserToRole(string userId, string roleName)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found." });
+            }
+
+            //// Check if the role exists
+            //var roleExists = await _userManager.IsInRoleAsync(user, roleName);
+            //if (!roleExists)
+            //{
+            //    return BadRequest(new { Message = $"Role '{roleName}' does not exist." });
+            //}
+
+            // Add the user to the role
+            var result = await _userManager.AddToRoleAsync(user, roleName);
+
+            if (result.Succeeded)
+            {
+                return Ok(new { Message = $"User added to role '{roleName}' successfully." });
+            }
+
+            return BadRequest(new { Message = "Failed to add user to role.", Errors = result.Errors });
+        }
+
 
     }
 }
