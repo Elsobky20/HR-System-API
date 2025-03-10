@@ -25,13 +25,15 @@ namespace HR_System_API.Controllers
         }
 
         #region Get Users
+
         // GET: api/Users
         [HttpGet]
-        public IActionResult GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
-            var allUsers = _usersService.GetAll();
+            var allUsers = await _usersService.GetAllAsync();
             return Ok(allUsers);
         }
+
         #endregion
 
         #region Get User Details
@@ -109,12 +111,12 @@ namespace HR_System_API.Controllers
                 return NotFound(new { Message = "User not found." });
             }
 
-            //// Check if the role exists
-            //var roleExists = await _userManager.IsInRoleAsync(user, roleName);
-            //if (!roleExists)
-            //{
-            //    return BadRequest(new { Message = $"Role '{roleName}' does not exist." });
-            //}
+            // Check if the role exists
+            var roleExists = await _userManager.IsInRoleAsync(user, roleName);
+            if (!roleExists)
+            {
+                return BadRequest(new { Message = $"Role '{roleName}' does not exist." });
+            }
 
             // Add the user to the role
             var result = await _userManager.AddToRoleAsync(user, roleName);

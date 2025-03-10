@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using DAL.DTO;
 using BLL.Helper;
 using HR_System_API.Extend;
+using HR_System_API.Services.EmailServices;
 
 namespace HR_System_API.Controllers
 {
@@ -16,14 +17,14 @@ namespace HR_System_API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IEmailService _emailServices;
 
-        public AccountController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailServices)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _signInManager = signInManager;
+            _emailServices = emailServices;
         }
 
         // GET: api/Account
@@ -99,15 +100,10 @@ namespace HR_System_API.Controllers
                     // Create password reset link
                     var passwordResetLink = Url.Action("ResetPassword", "Account", new { Email = model.Email, Token = token }, Request.Scheme);
 
-                    // Send email
-                    MailSender.SendMail(new MailDTO()
-                    {
-                        Email = model.Email,
-                        Title = "Reset Password",
-                        Message = passwordResetLink
-                    });
+                    var result = await _emailServices.SendEmailAsync(user.Name, passwordResetLink, model.Email);
 
-                    return Ok(new { Message = "Password reset link sent to email." });
+                    //return Ok(new { Message = "Password reset link sent to email." });
+                    return Ok(result);
                 }
 
                 return NotFound("User not found.");

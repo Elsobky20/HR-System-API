@@ -35,7 +35,11 @@ public class RoleController : ControllerBase
     [HttpGet]
     public IActionResult GetRoles()
     {
-        var allRoles = rolesServ.GetAll();
+        var allRoles = rolesServ.GetAll().Select(r => new
+        {
+            r.Id,
+            r.Name
+        });
         return Ok(allRoles);
     }
 
@@ -48,16 +52,21 @@ public class RoleController : ControllerBase
         {
             return NotFound(new { Success = false, Message = "Role not found." });
         }
-        return Ok(role);
+        return Ok(new { role.Id, role.Name });
     }
 
-
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] IdentityRole model)
+    public async Task<IActionResult> Create([FromBody] string RoleName)
     {
         if (ModelState.IsValid)
         {
-            var result = await rolesServ.Create(model);
+            var Role = new IdentityRole
+            {
+                Name = RoleName,
+                NormalizedName = RoleName.ToUpper(),
+                ConcurrencyStamp = Guid.NewGuid().ToString()
+            };
+            var result = await rolesServ.Create(Role);
             if (result)
             {
                 return Ok(new { Success = true, Message = "Role created successfully." });
@@ -67,6 +76,25 @@ public class RoleController : ControllerBase
         return BadRequest(ModelState);
     }
 
+    [HttpPut]
+    public async Task<IActionResult> Ubdate(string RoleId, string RoleName)
+    {
+        if (ModelState.IsValid)
+        {
+            var Role = new IdentityRole
+            {
+                Id = RoleId,
+                Name = RoleName,
+            };
+            var result = await rolesServ.Edit(Role);
+            if (result)
+            {
+                return Ok(new { Success = true, Message = "Role Updated successfully." });
+            }
+            return BadRequest(new { Success = false, Message = "Error Updating role." });
+        }
+        return BadRequest(ModelState);
+    }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)

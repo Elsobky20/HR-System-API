@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services.UsersServices
 {
@@ -23,7 +24,7 @@ namespace BLL.Services.UsersServices
             this.db = db;
         }
 
-        public async Task<ApplicationUser> Create(CreateUserDTO model)
+        public async Task<AuthenticationDTO> Create(CreateUserDTO model)
         {
             try
             {
@@ -37,8 +38,8 @@ namespace BLL.Services.UsersServices
                     UserName = model.UserName,
                     Nationalid = model.Nationalid,
                     Salary = model.Salary,
-                    TimeOfAttend = model.TimeOfAttend,
-                    TimeOfLeave = model.TimeOfLeave,
+                    TimeOfAttend = DateTime.Parse(model.TimeOfAttend),
+                    TimeOfLeave = DateTime.Parse(model.TimeOfLeave),
                     Gender = model.Gender,
                     DateOfWork = model.DateOfWork,
                 };
@@ -47,14 +48,38 @@ namespace BLL.Services.UsersServices
                 if (!result.Succeeded)
                 {
                     var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                    throw new Exception($"Failed to create user: {errors}");
+                    return new()
+                    {
+                        Message = errors
+                    };
                 }
 
-                return user;
+                return new()
+                {
+                    Email = user.Email,
+                    Name = user.Name,
+                    Address = user.Address,
+                    DateOfBarth = user.DateOfBarth.ToLongDateString(),
+                    PhoneNumber = user.PhoneNumber,
+                    UserName = user.UserName,
+                    Nationalid = user.Nationalid,
+                    Salary = user.Salary,
+                    TimeOfAttend = user.TimeOfAttend.ToShortTimeString(),
+                    TimeOfLeave = user.TimeOfLeave.ToShortTimeString(),
+                    Gender = user.Gender,
+                    DateOfWork = user.DateOfWork.ToString(),
+                    IsAuthenticated = true,
+                    Message = "User created successfully!",
+                    Id = user.Id,
+                    Roles = await _userManager.GetRolesAsync(user)
+                };
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred while creating the user: {ex.Message}");
+                return new()
+                {
+                    Message = ex.Message
+                };
             }
         }
 
@@ -63,7 +88,7 @@ namespace BLL.Services.UsersServices
 
             try
             {
-                var user = await GetByID(id);
+                var user = await _userManager.FindByIdAsync(id);
                 if (user != null)
                 {
                     var result = await _userManager.DeleteAsync(user);
@@ -85,7 +110,7 @@ namespace BLL.Services.UsersServices
         {
             try
             {
-                var user = await GetByID(model.Id);
+                var user = await _userManager.FindByIdAsync(model.Id);
                 if (user != null)
                 {
                     user.Email = model.Email;
@@ -107,25 +132,77 @@ namespace BLL.Services.UsersServices
                 {
                     return false;
                 }
-                
+
             }
             catch (Exception)
             {
                 return true;
             }
-           
+
         }
 
-        public IQueryable<ApplicationUser> GetAll()
+        public async Task<List<AuthenticationDTO>> GetAllAsync()
         {
-            var users = _userManager.Users;
-            return users;
+            var users = await _userManager.Users.ToListAsync();
+
+            var userList = new List<AuthenticationDTO>();
+
+            foreach (var user in users)
+            {
+                userList.Add(new AuthenticationDTO
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    PhoneNumber = user.PhoneNumber,
+                    Address = user.Address,
+                    Nationalid = user.Nationalid,
+                    Salary = user.Salary,
+                    TimeOfAttend = user.TimeOfAttend.ToString(),
+                    TimeOfLeave = user.TimeOfLeave.ToString(),
+                    Gender = user.Gender,
+                    DateOfWork = user.DateOfWork.ToString(),
+                    DateOfBarth = user.DateOfBarth.ToString(),
+                    Roles = await _userManager.GetRolesAsync(user)
+                });
+            }
+
+            return userList;
         }
 
-        public async Task<ApplicationUser> GetByID(string id)
+
+
+        public async Task<AuthenticationDTO> GetByID(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            return user;
+            if (user == null)
+            {
+                return new()
+                {
+                    Message = "User not found"
+                };
+            }
+
+            return new AuthenticationDTO
+            {
+                Message = "User found",
+                IsAuthenticated = true,
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                UserName = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address,
+                Nationalid = user.Nationalid,
+                Salary = user.Salary,
+                TimeOfAttend = user.TimeOfAttend.ToString(),
+                TimeOfLeave = user.TimeOfLeave.ToString(),
+                Gender = user.Gender,
+                DateOfWork = user.DateOfWork.ToString(),
+                DateOfBarth = user.DateOfBarth.ToString(),
+                Roles = (await _userManager.GetRolesAsync(user)).ToList()
+            };
         }
     }
 }

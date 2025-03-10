@@ -30,9 +30,9 @@ namespace HR_System_API.DTO
         [Range(0, double.MaxValue, ErrorMessage = "Salary must be a positive value.")]
         public double Salary { get; set; }
 
-        public DateTime TimeOfAttend { get; set; }
+        public string TimeOfAttend { get; set; }
 
-        public DateTime TimeOfLeave { get; set; }
+        public string TimeOfLeave { get; set; }
 
         [Required(ErrorMessage = "Gender is required.")]
         public string Gender { get; set; }

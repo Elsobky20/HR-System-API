@@ -1,8 +1,10 @@
 using BLL.Services.RolesServices;
 using BLL.Services.UsersServices;
 using HR_System.DataBase;
+using HR_System_API.DTO;
 using HR_System_API.Extend;
 using HR_System_API.Services.AttendanceServices;
+using HR_System_API.Services.EmailServices;
 using HR_System_API.Services.LeaveServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -23,6 +25,9 @@ namespace HR_System_API
             // Add services to the container.
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+            builder.Services.AddScoped<IUsersServices, UsersServices>();
+            builder.Services.AddScoped<IRolesServices, RolesServices>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -37,6 +42,7 @@ namespace HR_System_API
                            .AllowAnyHeader();
                 });
             });
+            builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection(nameof(EmailConfiguration)));
 
             builder.Services.AddSwaggerGen();
 

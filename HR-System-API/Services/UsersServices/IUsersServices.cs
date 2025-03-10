@@ -12,10 +12,10 @@ namespace BLL.Services.UsersServices
 {
     public interface IUsersServices
     {
-        IQueryable<ApplicationUser> GetAll();
-        Task<ApplicationUser> GetByID(string id);
+        Task<List<AuthenticationDTO>> GetAllAsync();
+        Task<AuthenticationDTO> GetByID(string id);
         Task<bool> Edit(ApplicationUser model);
         Task<bool> Delete(string id);
-        Task<ApplicationUser> Create(CreateUserDTO model);
+        Task<AuthenticationDTO> Create(CreateUserDTO model);
     }
 }
